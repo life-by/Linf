@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>State .io - Realtime Multiplayer</title>
     
     <!-- Firebase SDK (Compat Version) -->
@@ -22,6 +22,7 @@
         body, html {
             width: 100%;
             height: 100%;
+            height: 100dvh;
             overflow: hidden;
             background-color: #0b0f19;
             touch-action: none;
@@ -31,6 +32,7 @@
             position: relative;
             width: 100vw;
             height: 100vh;
+            height: 100dvh;
             max-width: 540px;
             margin: 0 auto;
             background: #0f172a;
@@ -41,10 +43,10 @@
         /* Top Progress Bar */
         #top-bar {
             position: absolute;
-            top: 10px;
+            top: 8px;
             left: 4%;
             width: 92%;
-            height: 7px;
+            height: 6px;
             background: #1e293b;
             border-radius: 6px;
             display: flex;
@@ -64,7 +66,7 @@
         /* UI Badges */
         #room-badge {
             position: absolute;
-            top: 22px;
+            top: 20px;
             left: 4%;
             font-size: 11px;
             font-weight: 600;
@@ -79,7 +81,7 @@
 
         #legend {
             position: absolute;
-            top: 22px;
+            top: 20px;
             right: 4%;
             display: flex;
             gap: 6px;
@@ -91,7 +93,7 @@
 
         #instruction {
             position: absolute;
-            bottom: 6px;
+            bottom: 8px;
             width: 100%;
             text-align: center;
             font-size: 11px;
@@ -99,16 +101,17 @@
             pointer-events: none;
             font-weight: 500;
             letter-spacing: 0.3px;
+            z-index: 10;
         }
 
         /* --- ⚡ ডানপাশে সুরক্ষিত অবস্থানে পাওয়ার কার্ড --- */
         #skill-card {
             position: absolute;
-            right: 12px;
-            top: 52%;
+            right: 10px;
+            top: 50%;
             transform: translateY(-50%);
-            width: 52px;
-            height: 52px;
+            width: 48px;
+            height: 48px;
             background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(10px);
             border: 2px solid #f59e0b;
@@ -142,12 +145,12 @@
             50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.95); transform: translateY(-50%) scale(1.08); }
         }
 
-        #skill-card .card-icon { font-size: 18px; line-height: 1; }
+        #skill-card .card-icon { font-size: 16px; line-height: 1; }
         #skill-card .card-timer { font-size: 9px; font-weight: 700; color: #38bdf8; margin-top: 1px; }
 
         .skill-tooltip {
             position: absolute;
-            right: 60px;
+            right: 56px;
             background: rgba(15, 23, 42, 0.9);
             color: #f59e0b;
             font-size: 9px;
@@ -393,6 +396,7 @@
         canvas.height = height;
     }
     window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
     resizeCanvas();
 
     const COLORS = {
@@ -453,7 +457,7 @@
     let roomRef = null;
     let syncInterval = null;
 
-    // --- ৪০টি চারকোনা জমির রাজ্য ক্লাস ---
+    // --- ৪০টি চারকোনা জমির রাজ্য ক্লাস (নিখুঁত মার্জিন ও ফিটিং) ---
     class Base {
         constructor(id, relX, relY, relW, relH, owner, units, type = 'city', level = 1) {
             this.id = id;
@@ -473,10 +477,10 @@
             let rx = (myTeam === 'red') ? (1 - (this.relX + this.relW)) : this.relX;
             let ry = (myTeam === 'red') ? (1 - (this.relY + this.relH)) : this.relY;
             
-            // চারপাশে মার্জিন ও সেফ জোন (যাতে স্ক্রিনের বাইরে না যায়)
-            const marginX = 12;
+            // 🛡️ নিরাপদ মার্জিন যাতে কোনো অংশ স্ক্রিনের নিচে বা বাইরে না যায়
+            const marginX = 10;
             const marginTop = 48;
-            const marginBottom = 28;
+            const marginBottom = 45; // নিচের ফাঁকা জায়গা ঠিক করা হয়েছে
             const usableW = width - (marginX * 2);
             const usableH = height - (marginTop + marginBottom);
 
@@ -526,7 +530,7 @@
             if (this.owner !== 'gray' && this.type === 'tower') {
                 this.towerTimer += dt;
                 const fireInterval = 0.5 - (this.level * 0.1);
-                const range = 85 + (this.level * 20);
+                const range = 80 + (this.level * 20);
 
                 if (this.towerTimer >= fireInterval) {
                     const target = troops.find(t => t.owner !== this.owner && Math.hypot(t.x - this.x, t.y - this.y) <= range);
@@ -551,16 +555,16 @@
             ctx.roundRect ? ctx.roundRect(x, y, w, h, 6) : ctx.rect(x, y, w, h);
             ctx.fill();
 
-            // ২. জমির সীমানা বর্ডার
+            // ২. সীমানা বর্ডার
             ctx.strokeStyle = selectedBases.has(this) ? '#facc15' : theme.border;
             ctx.lineWidth = selectedBases.has(this) ? 2.5 : 1.2;
             ctx.stroke();
 
-            // ৩. সেন্ট্রাল ব্যাজ প্লেট (Compact badge for 40 states)
+            // ৩. সেন্ট্রাল ব্যাজ প্লেট
             const badgeW = Math.min(w * 0.78, 38);
-            const badgeH = 20;
+            const badgeH = Math.min(h * 0.48, 20);
             const bx = cx - badgeW/2;
-            const by = cy - badgeH/2;
+            const by = cy - badgeH/2 - 2;
 
             ctx.fillStyle = theme.badge;
             ctx.beginPath();
@@ -575,17 +579,17 @@
             ctx.font = '9px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(icon, cx - 9, cy);
+            ctx.fillText(icon, cx - 8, cy - 2);
 
             // সেনা সংখ্যা
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 10px Arial';
-            ctx.fillText(Math.floor(this.units), cx + 6, cy);
+            ctx.fillText(Math.floor(this.units), cx + 7, cy - 2);
 
             // লেভেল ডটস
             for (let i = 0; i < this.level; i++) {
                 ctx.beginPath();
-                ctx.arc(cx - (this.level - 1) * 2.5 + i * 5, by + badgeH + 4, 1.5, 0, Math.PI * 2);
+                ctx.arc(cx - (this.level - 1) * 2.5 + i * 5, by + badgeH + 3.5, 1.4, 0, Math.PI * 2);
                 ctx.fillStyle = '#facc15';
                 ctx.fill();
             }
@@ -659,15 +663,15 @@
         }
     }
 
-    // 🗺️ পুরো স্ক্রিনে কোনো ফাঁকা ছাড়া নিখুঁত ৪০টি রাজ্যের বিন্যাস (৫ কলাম x ৮ সারি)
+    // 🗺️ পুরো স্ক্রিনে ৪০টি রাজ্যের বিন্যাস (৫ কলাম x ৮ সারি)
     function initMap() {
         resizeCanvas();
         bases = [];
 
         const cols = 5;
         const rows = 8;
-        const w = 1 / cols; // ০.২০
-        const h = 1 / rows; // ০.১২৫
+        const w = 1 / cols; 
+        const h = 1 / rows; 
 
         let id = 1;
         for (let r = 0; r < rows; r++) {
@@ -676,19 +680,19 @@
                 let units = 8 + Math.floor(Math.random() * 6);
                 let type = 'city';
 
-                // সারি ৭ (একদম নিচের সারি - সবুজ দলের ৫টি মূল রাজ্য)
+                // সারি ৭ (সবুজ দল - নিচে)
                 if (r === 7) {
                     owner = 'green';
                     units = (c === 0 || c === 4) ? 22 : 18;
                     type = (c % 2 === 0) ? 'city' : 'barracks';
                 }
-                // সারি ০ (একদম উপরের সারি - লাল দলের ৫টি মূল রাজ্য)
+                // সারি ০ (লাল দল - উপরে)
                 else if (r === 0) {
                     owner = 'red';
                     units = (c === 0 || c === 4) ? 22 : 18;
                     type = (c % 2 === 0) ? 'city' : 'barracks';
                 }
-                // বাকিগুলো নিরপেক্ষ রাজ্য ও মাঝখানে টাওয়ার
+                // নিরপেক্ষ রাজ্য
                 else {
                     if ((r === 3 || r === 4) && (c === 1 || c === 3)) {
                         type = 'tower';
