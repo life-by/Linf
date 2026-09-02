@@ -41,10 +41,10 @@
         /* Top Progress Bar */
         #top-bar {
             position: absolute;
-            top: 12px;
+            top: 10px;
             left: 4%;
             width: 92%;
-            height: 8px;
+            height: 7px;
             background: #1e293b;
             border-radius: 6px;
             display: flex;
@@ -64,14 +64,14 @@
         /* UI Badges */
         #room-badge {
             position: absolute;
-            top: 26px;
+            top: 22px;
             left: 4%;
             font-size: 11px;
             font-weight: 600;
             color: #f8fafc;
             background: rgba(15, 23, 42, 0.85);
-            padding: 3px 10px;
-            border-radius: 10px;
+            padding: 2px 8px;
+            border-radius: 8px;
             border: 1px solid #334155;
             z-index: 10;
             backdrop-filter: blur(4px);
@@ -79,11 +79,11 @@
 
         #legend {
             position: absolute;
-            top: 26px;
+            top: 22px;
             right: 4%;
             display: flex;
-            gap: 8px;
-            font-size: 11px;
+            gap: 6px;
+            font-size: 10px;
             color: #94a3b8;
             pointer-events: none;
             z-index: 5;
@@ -91,7 +91,7 @@
 
         #instruction {
             position: absolute;
-            bottom: 8px;
+            bottom: 6px;
             width: 100%;
             text-align: center;
             font-size: 11px;
@@ -101,14 +101,15 @@
             letter-spacing: 0.3px;
         }
 
-        /* --- ⚡ প্রফেশনাল স্লিম পাওয়ার কার্ড ব্যাজ --- */
+        /* --- ⚡ ডানপাশে সুরক্ষিত অবস্থানে পাওয়ার কার্ড --- */
         #skill-card {
             position: absolute;
-            right: 14px;
-            bottom: 40px;
-            width: 58px;
-            height: 58px;
-            background: rgba(15, 23, 42, 0.85);
+            right: 12px;
+            top: 52%;
+            transform: translateY(-50%);
+            width: 52px;
+            height: 52px;
+            background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(10px);
             border: 2px solid #f59e0b;
             border-radius: 50%;
@@ -117,19 +118,19 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
-            z-index: 25;
+            z-index: 30;
             cursor: pointer;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        #skill-card:active { transform: scale(0.90); }
+        #skill-card:active { transform: translateY(-50%) scale(0.90); }
 
         #skill-card.locked {
             border-color: #475569;
             box-shadow: none;
             opacity: 0.65;
             cursor: not-allowed;
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.75);
         }
 
         #skill-card.ready {
@@ -137,22 +138,22 @@
         }
 
         @keyframes cardPulse {
-            0%, 100% { box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); transform: scale(1); }
-            50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.9); transform: scale(1.06); }
+            0%, 100% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); transform: translateY(-50%) scale(1); }
+            50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.95); transform: translateY(-50%) scale(1.08); }
         }
 
-        #skill-card .card-icon { font-size: 20px; line-height: 1; }
-        #skill-card .card-timer { font-size: 10px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
+        #skill-card .card-icon { font-size: 18px; line-height: 1; }
+        #skill-card .card-timer { font-size: 9px; font-weight: 700; color: #38bdf8; margin-top: 1px; }
 
         .skill-tooltip {
             position: absolute;
-            right: 68px;
+            right: 60px;
             background: rgba(15, 23, 42, 0.9);
             color: #f59e0b;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 3px 6px;
+            border-radius: 5px;
             border: 1px solid #f59e0b;
             white-space: nowrap;
             pointer-events: none;
@@ -223,7 +224,7 @@
         }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        /* 🤖 বট ডিফিকাল্টি স্লাইডার বক্স */
+        /* 🤖 বট ডিফিকাল্টি স্লাইডার */
         .bot-slider-box {
             width: 220px;
             background: rgba(30, 41, 59, 0.7);
@@ -272,7 +273,7 @@
 
     <canvas id="gameCanvas"></canvas>
 
-    <!-- ⚡ ১ মিনিট পর আসা পাওয়ার ব্যাজ -->
+    <!-- ⚡ ডানপাশের ফ্ল্যাশ কার্ড -->
     <div id="skill-card" class="locked" onclick="useInfiltrationCard()">
         <span class="skill-tooltip">গুপ্তচর বিদ্রোহ (+৫ সেনা)</span>
         <div class="card-icon">🕵️‍♂️</div>
@@ -426,11 +427,9 @@
     let gameOver = false;
     let gameStarted = false;
 
-    // ১ মিনিট কার্ড টাইমার
     let cardCooldown = 60; 
     let cardTimer = 60;
 
-    // 🤖 বটের ডিফিকাল্টি ভ্যারিয়েবল (১% - ১০০%)
     let botDifficulty = 50; 
     function updateBotDifficulty(val) {
         botDifficulty = parseInt(val);
@@ -438,16 +437,15 @@
         if (label) {
             label.innerText = botDifficulty + '%';
             if (botDifficulty < 35) {
-                label.style.color = '#38bdf8'; // সহজ
+                label.style.color = '#38bdf8';
             } else if (botDifficulty < 75) {
-                label.style.color = '#22c55e'; // মাঝারি
+                label.style.color = '#22c55e';
             } else {
-                label.style.color = '#ef4444'; // কঠিন
+                label.style.color = '#ef4444';
             }
         }
     }
 
-    // Multiplayer State
     let isMultiplayer = false;
     let isSolo = false;
     let myTeam = 'green'; 
@@ -455,6 +453,7 @@
     let roomRef = null;
     let syncInterval = null;
 
+    // --- ৪০টি চারকোনা জমির রাজ্য ক্লাস ---
     class Base {
         constructor(id, relX, relY, relW, relH, owner, units, type = 'city', level = 1) {
             this.id = id;
@@ -474,16 +473,17 @@
             let rx = (myTeam === 'red') ? (1 - (this.relX + this.relW)) : this.relX;
             let ry = (myTeam === 'red') ? (1 - (this.relY + this.relH)) : this.relY;
             
-            const marginX = 10;
-            const marginTop = 50;
-            const marginBottom = 50;
+            // চারপাশে মার্জিন ও সেফ জোন (যাতে স্ক্রিনের বাইরে না যায়)
+            const marginX = 12;
+            const marginTop = 48;
+            const marginBottom = 28;
             const usableW = width - (marginX * 2);
             const usableH = height - (marginTop + marginBottom);
 
-            const x = marginX + (rx * usableW) + 2;
-            const y = marginTop + (ry * usableH) + 2;
-            const w = (this.relW * usableW) - 4;
-            const h = (this.relH * usableH) - 4;
+            const x = marginX + (rx * usableW) + 1.5;
+            const y = marginTop + (ry * usableH) + 1.5;
+            const w = (this.relW * usableW) - 3;
+            const h = (this.relH * usableH) - 3;
 
             return { x, y, w, h, cx: x + w/2, cy: y + h/2 };
         }
@@ -492,11 +492,11 @@
         get y() { return this.rect.cy; }
 
         get maxUnits() {
-            if (this.type === 'barracks') return 35 + (this.level * 15);
-            return 50 + (this.level * 25);
+            if (this.type === 'barracks') return 30 + (this.level * 10);
+            return 45 + (this.level * 20);
         }
 
-        get upgradeCost() { return this.level * 15; }
+        get upgradeCost() { return this.level * 12; }
 
         canUpgrade() { return this.level < 3 && this.units > this.upgradeCost; }
 
@@ -504,7 +504,7 @@
             if (this.canUpgrade()) {
                 this.units -= this.upgradeCost;
                 this.level++;
-                spawnExplosion(this.x, this.y, COLORS[this.owner].border, 12);
+                spawnExplosion(this.x, this.y, COLORS[this.owner].border, 10);
                 if (!silent) AudioEngine.upgrade();
                 return true;
             }
@@ -526,7 +526,7 @@
             if (this.owner !== 'gray' && this.type === 'tower') {
                 this.towerTimer += dt;
                 const fireInterval = 0.5 - (this.level * 0.1);
-                const range = 110 + (this.level * 25);
+                const range = 85 + (this.level * 20);
 
                 if (this.towerTimer >= fireInterval) {
                     const target = troops.find(t => t.owner !== this.owner && Math.hypot(t.x - this.x, t.y - this.y) <= range);
@@ -534,7 +534,7 @@
                         this.towerTimer = 0;
                         target.active = false;
                         towerShots.push({ x1: this.x, y1: this.y, x2: target.x, y2: target.y, life: 0.1 });
-                        spawnExplosion(target.x, target.y, COLORS[this.owner].border, 4);
+                        spawnExplosion(target.x, target.y, COLORS[this.owner].border, 3);
                         AudioEngine.towerShoot();
                     }
                 }
@@ -545,44 +545,47 @@
             const { x, y, w, h, cx, cy } = this.rect;
             const theme = COLORS[this.owner];
 
+            // ১. চারকোনা জমির ব্যাকগ্রাউন্ড
             ctx.fillStyle = theme.main;
             ctx.beginPath();
-            ctx.roundRect ? ctx.roundRect(x, y, w, h, 8) : ctx.rect(x, y, w, h);
+            ctx.roundRect ? ctx.roundRect(x, y, w, h, 6) : ctx.rect(x, y, w, h);
             ctx.fill();
 
-            ctx.strokeStyle = theme.border;
-            ctx.lineWidth = selectedBases.has(this) ? 3.5 : 2;
-            if (selectedBases.has(this)) {
-                ctx.strokeStyle = '#facc15';
-            }
+            // ২. জমির সীমানা বর্ডার
+            ctx.strokeStyle = selectedBases.has(this) ? '#facc15' : theme.border;
+            ctx.lineWidth = selectedBases.has(this) ? 2.5 : 1.2;
             ctx.stroke();
 
-            const badgeW = Math.min(w * 0.72, 48);
-            const badgeH = 26;
+            // ৩. সেন্ট্রাল ব্যাজ প্লেট (Compact badge for 40 states)
+            const badgeW = Math.min(w * 0.78, 38);
+            const badgeH = 20;
             const bx = cx - badgeW/2;
             const by = cy - badgeH/2;
 
             ctx.fillStyle = theme.badge;
             ctx.beginPath();
-            ctx.roundRect ? ctx.roundRect(bx, by, badgeW, badgeH, 6) : ctx.rect(bx, by, badgeW, badgeH);
+            ctx.roundRect ? ctx.roundRect(bx, by, badgeW, badgeH, 4) : ctx.rect(bx, by, badgeW, badgeH);
             ctx.fill();
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 0.8;
             ctx.stroke();
 
+            // টাইপ আইকন
             let icon = this.type === 'barracks' ? '⚡' : (this.type === 'tower' ? '🛡️' : '🏛️');
-            ctx.font = '10px Arial';
+            ctx.font = '9px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(icon, cx - 12, cy);
+            ctx.fillText(icon, cx - 9, cy);
 
+            // সেনা সংখ্যা
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 12px Arial';
-            ctx.fillText(Math.floor(this.units), cx + 8, cy);
+            ctx.font = 'bold 10px Arial';
+            ctx.fillText(Math.floor(this.units), cx + 6, cy);
 
+            // লেভেল ডটস
             for (let i = 0; i < this.level; i++) {
                 ctx.beginPath();
-                ctx.arc(cx - (this.level - 1) * 3.5 + i * 7, by + badgeH + 6, 2, 0, Math.PI * 2);
+                ctx.arc(cx - (this.level - 1) * 2.5 + i * 5, by + badgeH + 4, 1.5, 0, Math.PI * 2);
                 ctx.fillStyle = '#facc15';
                 ctx.fill();
             }
@@ -596,7 +599,7 @@
             this.x = fromBase.x;
             this.y = fromBase.y;
             this.speed = 135;
-            this.radius = 4;
+            this.radius = 3.5;
             this.active = true;
         }
 
@@ -606,7 +609,7 @@
             const dy = this.toBase.y - this.y;
             const dist = Math.hypot(dx, dy);
 
-            if (dist < 8) {
+            if (dist < 7) {
                 this.active = false;
                 this.hitBase();
                 return;
@@ -626,7 +629,7 @@
                     base.owner = this.owner;
                     base.units = 1;
                     base.level = 1;
-                    spawnExplosion(base.x, base.y, COLORS[this.owner].border, 14);
+                    spawnExplosion(base.x, base.y, COLORS[this.owner].border, 12);
                 }
             }
         }
@@ -638,57 +641,70 @@
             ctx.fillStyle = COLORS[this.owner].border;
             ctx.fill();
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 1;
+            ctx.lineWidth = 0.8;
             ctx.stroke();
         }
     }
 
-    function spawnExplosion(x, y, color, count = 8) {
+    function spawnExplosion(x, y, color, count = 6) {
         for (let i = 0; i < count; i++) {
             particles.push({
                 x, y,
-                vx: (Math.random() - 0.5) * 130,
-                vy: (Math.random() - 0.5) * 130,
-                radius: Math.random() * 2.5 + 1,
+                vx: (Math.random() - 0.5) * 120,
+                vy: (Math.random() - 0.5) * 120,
+                radius: Math.random() * 2 + 1,
                 color,
-                life: 0.35
+                life: 0.3
             });
         }
     }
 
+    // 🗺️ পুরো স্ক্রিনে কোনো ফাঁকা ছাড়া নিখুঁত ৪০টি রাজ্যের বিন্যাস (৫ কলাম x ৮ সারি)
     function initMap() {
         resizeCanvas();
-        bases = [
-            // সারি ৫ (নিচে - সবুজ দলের ৪টি রাজ্য)
-            new Base(1,  0.00, 0.80, 0.25, 0.20, 'green', 25, 'city', 1),
-            new Base(2,  0.25, 0.80, 0.25, 0.20, 'green', 20, 'barracks', 1),
-            new Base(3,  0.50, 0.80, 0.25, 0.20, 'green', 20, 'barracks', 1),
-            new Base(4,  0.75, 0.80, 0.25, 0.20, 'green', 25, 'city', 1),
+        bases = [];
 
-            // সারি ৪ (নিরপেক্ষ নিচের জমি)
-            new Base(5,  0.00, 0.60, 0.25, 0.20, 'gray', 10, 'city', 1),
-            new Base(6,  0.25, 0.60, 0.25, 0.20, 'gray', 12, 'barracks', 1),
-            new Base(7,  0.50, 0.60, 0.25, 0.20, 'gray', 15, 'tower', 1),
-            new Base(8,  0.75, 0.60, 0.25, 0.20, 'gray', 10, 'city', 1),
+        const cols = 5;
+        const rows = 8;
+        const w = 1 / cols; // ০.২০
+        const h = 1 / rows; // ০.১২৫
 
-            // সারি ৩ (মাঝখানের মূল কেন্দ্র)
-            new Base(9,  0.00, 0.40, 0.25, 0.20, 'gray', 12, 'barracks', 1),
-            new Base(10, 0.25, 0.40, 0.25, 0.20, 'gray', 18, 'tower', 1),
-            new Base(11, 0.50, 0.40, 0.25, 0.20, 'gray', 18, 'tower', 1),
-            new Base(12, 0.75, 0.40, 0.25, 0.20, 'gray', 12, 'barracks', 1),
+        let id = 1;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let owner = 'gray';
+                let units = 8 + Math.floor(Math.random() * 6);
+                let type = 'city';
 
-            // সারি ২ (নিরপেক্ষ উপরের জমি)
-            new Base(13, 0.00, 0.20, 0.25, 0.20, 'gray', 10, 'city', 1),
-            new Base(14, 0.25, 0.20, 0.25, 0.20, 'gray', 15, 'tower', 1),
-            new Base(15, 0.50, 0.20, 0.25, 0.20, 'gray', 12, 'barracks', 1),
-            new Base(16, 0.75, 0.20, 0.25, 0.20, 'gray', 10, 'city', 1),
+                // সারি ৭ (একদম নিচের সারি - সবুজ দলের ৫টি মূল রাজ্য)
+                if (r === 7) {
+                    owner = 'green';
+                    units = (c === 0 || c === 4) ? 22 : 18;
+                    type = (c % 2 === 0) ? 'city' : 'barracks';
+                }
+                // সারি ০ (একদম উপরের সারি - লাল দলের ৫টি মূল রাজ্য)
+                else if (r === 0) {
+                    owner = 'red';
+                    units = (c === 0 || c === 4) ? 22 : 18;
+                    type = (c % 2 === 0) ? 'city' : 'barracks';
+                }
+                // বাকিগুলো নিরপেক্ষ রাজ্য ও মাঝখানে টাওয়ার
+                else {
+                    if ((r === 3 || r === 4) && (c === 1 || c === 3)) {
+                        type = 'tower';
+                        units = 14;
+                    } else if (r % 2 === 1 && c % 2 === 1) {
+                        type = 'barracks';
+                        units = 10;
+                    } else {
+                        type = 'city';
+                        units = 8;
+                    }
+                }
 
-            // সারি ১ (উপরে - লাল দলের ৪টি রাজ্য)
-            new Base(17, 0.00, 0.00, 0.25, 0.20, 'red', 25, 'city', 1),
-            new Base(18, 0.25, 0.00, 0.25, 0.20, 'red', 20, 'barracks', 1),
-            new Base(19, 0.50, 0.00, 0.25, 0.20, 'red', 20, 'barracks', 1),
-            new Base(20, 0.75, 0.00, 0.25, 0.20, 'red', 25, 'city', 1)
-        ];
+                bases.push(new Base(id++, c * w, r * h, w, h, owner, units, type, 1));
+            }
+        }
 
         troops = [];
         particles = [];
@@ -726,10 +742,10 @@
                 if (b.units < 5) {
                     b.owner = casterTeam;
                     b.units = Math.max(1, 5 - b.units);
-                    spawnExplosion(b.x, b.y, COLORS[casterTeam].border, 20);
+                    spawnExplosion(b.x, b.y, COLORS[casterTeam].border, 16);
                 } else {
                     b.units -= 5;
-                    spawnExplosion(b.x, b.y, '#f59e0b', 10);
+                    spawnExplosion(b.x, b.y, '#f59e0b', 8);
                 }
             }
         });
@@ -778,7 +794,7 @@
                 if (!gameOver && fromBase.owner) {
                     troops.push(new Troop(fromBase, toBase, fromBase.owner));
                 }
-            }, i * 50);
+            }, i * 45);
         }
     }
 
@@ -789,7 +805,7 @@
                 const t2 = troops[j];
 
                 if (t1.active && t2.active && t1.owner !== t2.owner) {
-                    if (Math.hypot(t1.x - t2.x, t1.y - t2.y) < 9) {
+                    if (Math.hypot(t1.x - t2.x, t1.y - t2.y) < 8) {
                         t1.active = false;
                         t2.active = false;
                         spawnExplosion((t1.x + t2.x) / 2, (t1.y + t2.y) / 2, '#fbbf24', 4);
@@ -800,13 +816,11 @@
         }
     }
 
-    // --- 🤖 বট এআই (স্লাইডার অনুযায়ী ডিফিকাল্টি অ্যাডজাস্টেড) ---
     let soloAiTimer = 0;
     function runSoloAI(dt) {
         if (!isSolo) return;
         soloAiTimer += dt;
 
-        // স্লাইডারের শতাংশ অনুযায়ী সিদ্ধান্ত গ্রহণের গতি নির্ধারণ (১% হলে ৩.৫ সেকেন্ড, ১০০% হলে ০.৮ সেকেন্ড)
         const diffRatio = Math.max(0.01, botDifficulty / 100);
         const decisionInterval = 3.5 - (diffRatio * 2.7);
 
@@ -816,31 +830,26 @@
         const myBases = bases.filter(b => b.owner === 'red');
         if (myBases.length === 0) return;
 
-        // আপগ্রেড করার সিদ্ধান্ত (দক্ষতার ওপর নির্ভর করে)
         myBases.forEach(b => {
             if (Math.random() < diffRatio && b.units > b.maxUnits * 0.75 && b.canUpgrade()) {
                 b.upgrade();
             }
         });
 
-        // কত সৈন্য জমলে আক্রমণ করবে
-        const minUnitsToAttack = Math.round(18 - (diffRatio * 10));
+        const minUnitsToAttack = Math.round(16 - (diffRatio * 8));
         const readyBases = myBases.filter(b => b.units >= minUnitsToAttack);
 
         if (readyBases.length > 0) {
             const targets = bases.filter(b => b.owner !== 'red');
             if (targets.length === 0) return;
 
-            // বট সঠিক চাল দেবে নাকি ভুল করবে (Diff ratio এর ওপর নির্ভর করে)
             const isSmartMove = Math.random() < diffRatio;
             let chosenTarget;
             
             if (isSmartMove) {
-                // স্মার্ট চাল: সবচেয়ে দুর্বল রাজ্যে অ্যাটাক
                 targets.sort((a, b) => a.units - b.units);
                 chosenTarget = targets[0];
             } else {
-                // ভুল চাল: যেকোনো এলোমেলো রাজ্যে অ্যাটাক
                 chosenTarget = targets[Math.floor(Math.random() * targets.length)];
             }
 
@@ -895,7 +904,7 @@
     function updateTopBar() {
         if (bases.length === 0) return;
         let total = { green: 0, red: 0, gray: 0 };
-        bases.forEach(b => total[b.owner] += b.units + 5);
+        bases.forEach(b => total[b.owner] += b.units + 3);
         troops.forEach(t => { if(t.active) total[t.owner] += 1; });
 
         const sum = total.green + total.red + total.gray || 1;
@@ -1166,11 +1175,11 @@
         if (selectedBases.size > 0 && dragCurrentPos) {
             selectedBases.forEach(src => {
                 ctx.beginPath();
-                ctx.setLineDash([6, 6]);
+                ctx.setLineDash([5, 5]);
                 ctx.moveTo(src.x, src.y);
                 ctx.lineTo(dragCurrentPos.x, dragCurrentPos.y);
                 ctx.strokeStyle = COLORS[myTeam].border;
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2.5;
                 ctx.stroke();
                 ctx.setLineDash([]);
             });
@@ -1182,7 +1191,7 @@
             ctx.moveTo(shot.x1, shot.y1);
             ctx.lineTo(shot.x2, shot.y2);
             ctx.strokeStyle = '#facc15';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 2;
             ctx.stroke();
             shot.life -= dt;
             if (shot.life <= 0) towerShots.splice(i, 1);
