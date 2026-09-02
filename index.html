@@ -16,14 +16,14 @@
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #0f172a;
+            background-color: #0b0f19;
             touch-action: none;
         }
 
@@ -31,26 +31,27 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            max-width: 600px;
+            max-width: 540px;
             margin: 0 auto;
-            background: #1e293b;
+            background: #0f172a;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+            box-shadow: 0 0 35px rgba(0,0,0,0.8);
         }
 
         /* Top Progress Bar */
         #top-bar {
             position: absolute;
-            top: 15px;
-            left: 5%;
-            width: 90%;
-            height: 10px;
-            background: #334155;
-            border-radius: 5px;
+            top: 12px;
+            left: 4%;
+            width: 92%;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 6px;
             display: flex;
             overflow: hidden;
             z-index: 10;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         .bar-segment { height: 100%; transition: width 0.3s ease; }
@@ -60,27 +61,28 @@
 
         canvas { display: block; width: 100%; height: 100%; }
 
-        /* UI Legends & Badges */
+        /* UI Badges */
         #room-badge {
             position: absolute;
-            top: 32px;
-            left: 5%;
-            font-size: 12px;
-            font-weight: bold;
+            top: 26px;
+            left: 4%;
+            font-size: 11px;
+            font-weight: 600;
             color: #f8fafc;
-            background: rgba(15, 23, 42, 0.75);
-            padding: 5px 12px;
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 3px 10px;
+            border-radius: 10px;
             border: 1px solid #334155;
             z-index: 10;
+            backdrop-filter: blur(4px);
         }
 
         #legend {
             position: absolute;
-            top: 35px;
-            right: 5%;
+            top: 26px;
+            right: 4%;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             font-size: 11px;
             color: #94a3b8;
             pointer-events: none;
@@ -89,14 +91,75 @@
 
         #instruction {
             position: absolute;
-            bottom: 15px;
+            bottom: 8px;
             width: 100%;
             text-align: center;
-            font-size: 12px;
-            color: #94a3b8;
+            font-size: 11px;
+            color: #64748b;
             pointer-events: none;
             font-weight: 500;
+            letter-spacing: 0.3px;
         }
+
+        /* --- ⚡ প্রফেশনাল স্লিম পাওয়ার কার্ড ব্যাজ --- */
+        #skill-card {
+            position: absolute;
+            right: 14px;
+            bottom: 40px;
+            width: 58px;
+            height: 58px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+            z-index: 25;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #skill-card:active { transform: scale(0.90); }
+
+        #skill-card.locked {
+            border-color: #475569;
+            box-shadow: none;
+            opacity: 0.65;
+            cursor: not-allowed;
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        #skill-card.ready {
+            animation: cardPulse 1.6s infinite;
+        }
+
+        @keyframes cardPulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); transform: scale(1); }
+            50% { box-shadow: 0 0 24px rgba(245, 158, 11, 0.9); transform: scale(1.06); }
+        }
+
+        #skill-card .card-icon { font-size: 20px; line-height: 1; }
+        #skill-card .card-timer { font-size: 10px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
+
+        .skill-tooltip {
+            position: absolute;
+            right: 68px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #f59e0b;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #f59e0b;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        #skill-card:hover .skill-tooltip { opacity: 1; }
 
         /* Screens & Overlays */
         .overlay-screen {
@@ -105,8 +168,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(8px);
+            background: rgba(11, 15, 25, 0.94);
+            backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -117,49 +180,35 @@
             padding: 20px;
         }
 
-        .overlay-screen h1 {
-            font-size: 32px;
-            margin-bottom: 6px;
-            color: #22c55e;
-        }
-
-        .overlay-screen p {
-            font-size: 14px;
-            margin-bottom: 25px;
-            color: #94a3b8;
-        }
+        .overlay-screen h1 { font-size: 30px; margin-bottom: 6px; color: #22c55e; letter-spacing: 1px; }
+        .overlay-screen p { font-size: 13px; margin-bottom: 20px; color: #94a3b8; }
 
         .btn {
             background: #22c55e;
             color: #0f172a;
             border: none;
             padding: 12px 24px;
-            font-size: 15px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 700;
             border-radius: 25px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
             margin: 6px 0;
-            width: 220px;
+            width: 210px;
             transition: transform 0.1s;
         }
         .btn:active { transform: scale(0.95); }
-
-        .btn-secondary {
-            background: #334155;
-            color: #f8fafc;
-            box-shadow: none;
-        }
+        .btn-secondary { background: #334155; color: #f8fafc; box-shadow: none; }
 
         .input-code {
             padding: 10px 15px;
-            font-size: 18px;
+            font-size: 17px;
             border-radius: 12px;
             border: 2px solid #22c55e;
             background: #1e293b;
             color: white;
             text-align: center;
-            width: 180px;
+            width: 170px;
             margin-bottom: 12px;
             letter-spacing: 4px;
             text-transform: uppercase;
@@ -167,15 +216,39 @@
         }
 
         .waiting-spinner {
-            font-size: 18px;
+            font-size: 16px;
             color: #facc15;
             margin-top: 15px;
             animation: pulse 1.5s infinite;
         }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+        /* 🤖 বট ডিফিকাল্টি স্লাইডার বক্স */
+        .bot-slider-box {
+            width: 220px;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #334155;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            text-align: left;
+        }
+        .bot-slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .bot-slider-input {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            accent-color: #22c55e;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -199,6 +272,13 @@
 
     <canvas id="gameCanvas"></canvas>
 
+    <!-- ⚡ ১ মিনিট পর আসা পাওয়ার ব্যাজ -->
+    <div id="skill-card" class="locked" onclick="useInfiltrationCard()">
+        <span class="skill-tooltip">গুপ্তচর বিদ্রোহ (+৫ সেনা)</span>
+        <div class="card-icon">🕵️‍♂️</div>
+        <div id="card-timer-text" class="card-timer">60s</div>
+    </div>
+
     <div id="instruction">নিজের রাজ্য থেকে টেনে আক্রমণ করুন | ট্যাপ করে আপগ্রেড করুন</div>
 
     <!-- MAIN LOBBY MENU -->
@@ -208,20 +288,29 @@
         
         <button class="btn" onclick="startHostGame()">অনলাইন রুম তৈরি করুন</button>
         
-        <div style="margin: 15px 0 5px 0;">
+        <div style="margin: 12px 0 5px 0;">
             <input type="text" id="join-code-input" class="input-code" placeholder="কোড" maxlength="4">
             <br>
             <button class="btn btn-secondary" onclick="startJoinGame()">রুমে জয়েন করুন</button>
         </div>
 
-        <button class="btn btn-secondary" style="margin-top: 15px; background: transparent; border: 1px solid #475569;" onclick="startSoloGame()">বটের সাথে খেলুন (Solo)</button>
+        <!-- 🤖 বট পাওয়ার সিলেক্টর স্লাইডার (১% - ১০০%) -->
+        <div class="bot-slider-box">
+            <div class="bot-slider-header">
+                <span>🤖 বটের ক্ষমতা (AI):</span>
+                <span id="bot-diff-val" style="color: #22c55e; font-weight: bold;">50%</span>
+            </div>
+            <input type="range" id="bot-difficulty-slider" class="bot-slider-input" min="1" max="100" value="50" oninput="updateBotDifficulty(this.value)">
+        </div>
+
+        <button class="btn btn-secondary" style="background: transparent; border: 1px solid #475569;" onclick="startSoloGame()">বটের সাথে খেলুন (Solo)</button>
     </div>
 
     <!-- WAITING ROOM MODAL -->
     <div id="waiting-screen" class="overlay-screen" style="display: none;">
         <h2>রুম প্রস্তুত!</h2>
         <p>আপনার বন্ধুকে এই ৪ ডিজিটের কোডটি দিন:</p>
-        <h1 id="display-room-code" style="font-size: 48px; letter-spacing: 6px; color: #facc15;">----</h1>
+        <h1 id="display-room-code" style="font-size: 44px; letter-spacing: 6px; color: #facc15;">----</h1>
         <div class="waiting-spinner">বন্ধুর জয়েন করার জন্য অপেক্ষা করা হচ্ছে...</div>
         <button class="btn btn-secondary" style="margin-top: 30px;" onclick="cancelRoom()">বাতিল করুন</button>
     </div>
@@ -279,14 +368,14 @@
                 osc.stop(this.ctx.currentTime + duration);
             } catch(e) {}
         },
-        launch() { this.playTone(480, 'sine', 0.1); },
-        clash() { this.playTone(180, 'square', 0.08); },
-        upgrade() { this.playTone(650, 'triangle', 0.25); },
-        towerShoot() { this.playTone(850, 'sawtooth', 0.05); },
+        launch() { this.playTone(480, 'sine', 0.08); },
+        clash() { this.playTone(180, 'square', 0.07); },
+        upgrade() { this.playTone(650, 'triangle', 0.22); },
+        towerShoot() { this.playTone(850, 'sawtooth', 0.04); },
         win() {
-            setTimeout(() => this.playTone(523, 'sine', 0.3), 0);
-            setTimeout(() => this.playTone(659, 'sine', 0.3), 150);
-            setTimeout(() => this.playTone(784, 'sine', 0.5), 300);
+            setTimeout(() => this.playTone(523, 'sine', 0.25), 0);
+            setTimeout(() => this.playTone(659, 'sine', 0.25), 140);
+            setTimeout(() => this.playTone(784, 'sine', 0.45), 280);
         }
     };
 
@@ -306,9 +395,24 @@
     resizeCanvas();
 
     const COLORS = {
-        green: { main: '#22c55e', dark: '#16a34a', glow: 'rgba(34, 197, 94, 0.25)' },
-        red:   { main: '#ef4444', dark: '#dc2626', glow: 'rgba(239, 68, 68, 0.25)' },
-        gray:  { main: '#94a3b8', dark: '#475569', glow: 'rgba(148, 163, 184, 0.1)' }
+        green: { 
+            main: '#16a34a', 
+            border: '#22c55e', 
+            badge: '#15803d', 
+            glow: 'rgba(34, 197, 94, 0.35)' 
+        },
+        red: { 
+            main: '#dc2626', 
+            border: '#ef4444', 
+            badge: '#b91c1c', 
+            glow: 'rgba(239, 68, 68, 0.35)' 
+        },
+        gray: { 
+            main: '#334155', 
+            border: '#64748b', 
+            badge: '#1e293b', 
+            glow: 'rgba(148, 163, 184, 0.15)' 
+        }
     };
 
     let bases = [];
@@ -322,6 +426,27 @@
     let gameOver = false;
     let gameStarted = false;
 
+    // ১ মিনিট কার্ড টাইমার
+    let cardCooldown = 60; 
+    let cardTimer = 60;
+
+    // 🤖 বটের ডিফিকাল্টি ভ্যারিয়েবল (১% - ১০০%)
+    let botDifficulty = 50; 
+    function updateBotDifficulty(val) {
+        botDifficulty = parseInt(val);
+        const label = document.getElementById('bot-diff-val');
+        if (label) {
+            label.innerText = botDifficulty + '%';
+            if (botDifficulty < 35) {
+                label.style.color = '#38bdf8'; // সহজ
+            } else if (botDifficulty < 75) {
+                label.style.color = '#22c55e'; // মাঝারি
+            } else {
+                label.style.color = '#ef4444'; // কঠিন
+            }
+        }
+    }
+
     // Multiplayer State
     let isMultiplayer = false;
     let isSolo = false;
@@ -331,28 +456,40 @@
     let syncInterval = null;
 
     class Base {
-        constructor(id, relX, relY, owner, units, type = 'city', level = 1) {
+        constructor(id, relX, relY, relW, relH, owner, units, type = 'city', level = 1) {
             this.id = id;
             this.relX = relX;
             this.relY = relY;
+            this.relW = relW;
+            this.relH = relH;
             this.owner = owner;
             this.units = units;
             this.type = type;
             this.level = level;
-            this.radius = 24;
             this.regenTimer = 0;
             this.towerTimer = 0;
         }
 
-        get x() { 
-            const rx = (myTeam === 'red') ? (1 - this.relX) : this.relX;
-            return rx * width; 
+        get rect() {
+            let rx = (myTeam === 'red') ? (1 - (this.relX + this.relW)) : this.relX;
+            let ry = (myTeam === 'red') ? (1 - (this.relY + this.relH)) : this.relY;
+            
+            const marginX = 10;
+            const marginTop = 50;
+            const marginBottom = 50;
+            const usableW = width - (marginX * 2);
+            const usableH = height - (marginTop + marginBottom);
+
+            const x = marginX + (rx * usableW) + 2;
+            const y = marginTop + (ry * usableH) + 2;
+            const w = (this.relW * usableW) - 4;
+            const h = (this.relH * usableH) - 4;
+
+            return { x, y, w, h, cx: x + w/2, cy: y + h/2 };
         }
-        
-        get y() { 
-            const ry = (myTeam === 'red') ? (1 - this.relY) : this.relY;
-            return ry * height; 
-        }
+
+        get x() { return this.rect.cx; }
+        get y() { return this.rect.cy; }
 
         get maxUnits() {
             if (this.type === 'barracks') return 35 + (this.level * 15);
@@ -367,7 +504,7 @@
             if (this.canUpgrade()) {
                 this.units -= this.upgradeCost;
                 this.level++;
-                spawnExplosion(this.x, this.y, COLORS[this.owner].main, 12);
+                spawnExplosion(this.x, this.y, COLORS[this.owner].border, 12);
                 if (!silent) AudioEngine.upgrade();
                 return true;
             }
@@ -389,7 +526,7 @@
             if (this.owner !== 'gray' && this.type === 'tower') {
                 this.towerTimer += dt;
                 const fireInterval = 0.5 - (this.level * 0.1);
-                const range = 130 + (this.level * 30);
+                const range = 110 + (this.level * 25);
 
                 if (this.towerTimer >= fireInterval) {
                     const target = troops.find(t => t.owner !== this.owner && Math.hypot(t.x - this.x, t.y - this.y) <= range);
@@ -397,7 +534,7 @@
                         this.towerTimer = 0;
                         target.active = false;
                         towerShots.push({ x1: this.x, y1: this.y, x2: target.x, y2: target.y, life: 0.1 });
-                        spawnExplosion(target.x, target.y, COLORS[this.owner].main, 4);
+                        spawnExplosion(target.x, target.y, COLORS[this.owner].border, 4);
                         AudioEngine.towerShoot();
                     }
                 }
@@ -405,50 +542,47 @@
         }
 
         draw() {
-            const x = this.x;
-            const y = this.y;
+            const { x, y, w, h, cx, cy } = this.rect;
             const theme = COLORS[this.owner];
 
-            // Halo glow
-            ctx.beginPath();
-            ctx.arc(x, y, this.radius + 12 + (this.level * 3), 0, Math.PI * 2);
-            ctx.fillStyle = theme.glow;
-            ctx.fill();
-
-            // Selection Ring
-            if (selectedBases.has(this)) {
-                ctx.beginPath();
-                ctx.arc(x, y, this.radius + 6, 0, Math.PI * 2);
-                ctx.strokeStyle = '#facc15';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-            }
-
-            // Core
-            ctx.beginPath();
-            ctx.arc(x, y, this.radius, 0, Math.PI * 2);
             ctx.fillStyle = theme.main;
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(x, y, w, h, 8) : ctx.rect(x, y, w, h);
             ctx.fill();
-            ctx.strokeStyle = theme.dark;
-            ctx.lineWidth = 3;
+
+            ctx.strokeStyle = theme.border;
+            ctx.lineWidth = selectedBases.has(this) ? 3.5 : 2;
+            if (selectedBases.has(this)) {
+                ctx.strokeStyle = '#facc15';
+            }
             ctx.stroke();
 
-            // Type Icon
-            ctx.font = '12px Arial';
+            const badgeW = Math.min(w * 0.72, 48);
+            const badgeH = 26;
+            const bx = cx - badgeW/2;
+            const by = cy - badgeH/2;
+
+            ctx.fillStyle = theme.badge;
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(bx, by, badgeW, badgeH, 6) : ctx.rect(bx, by, badgeW, badgeH);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            let icon = this.type === 'barracks' ? '⚡' : (this.type === 'tower' ? '🛡️' : '🏛️');
+            ctx.font = '10px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            let icon = this.type === 'barracks' ? '⚡' : (this.type === 'tower' ? '🛡️' : '🏛️');
-            ctx.fillText(icon, x, y - 11);
+            ctx.fillText(icon, cx - 12, cy);
 
-            // Unit count
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 13px Arial';
-            ctx.fillText(Math.floor(this.units), x, y + 6);
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText(Math.floor(this.units), cx + 8, cy);
 
-            // Level Dots
             for (let i = 0; i < this.level; i++) {
                 ctx.beginPath();
-                ctx.arc(x - (this.level - 1) * 5 + i * 10, y + 18, 2.5, 0, Math.PI * 2);
+                ctx.arc(cx - (this.level - 1) * 3.5 + i * 7, by + badgeH + 6, 2, 0, Math.PI * 2);
                 ctx.fillStyle = '#facc15';
                 ctx.fill();
             }
@@ -462,7 +596,7 @@
             this.x = fromBase.x;
             this.y = fromBase.y;
             this.speed = 135;
-            this.radius = 5;
+            this.radius = 4;
             this.active = true;
         }
 
@@ -492,7 +626,7 @@
                     base.owner = this.owner;
                     base.units = 1;
                     base.level = 1;
-                    spawnExplosion(base.x, base.y, COLORS[this.owner].main, 15);
+                    spawnExplosion(base.x, base.y, COLORS[this.owner].border, 14);
                 }
             }
         }
@@ -501,7 +635,7 @@
             if (!this.active) return;
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fillStyle = COLORS[this.owner].main;
+            ctx.fillStyle = COLORS[this.owner].border;
             ctx.fill();
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 1;
@@ -513,9 +647,9 @@
         for (let i = 0; i < count; i++) {
             particles.push({
                 x, y,
-                vx: (Math.random() - 0.5) * 140,
-                vy: (Math.random() - 0.5) * 140,
-                radius: Math.random() * 3 + 1,
+                vx: (Math.random() - 0.5) * 130,
+                vy: (Math.random() - 0.5) * 130,
+                radius: Math.random() * 2.5 + 1,
                 color,
                 life: 0.35
             });
@@ -525,28 +659,35 @@
     function initMap() {
         resizeCanvas();
         bases = [
-            // 🟢 সবুজ দল (Host)
-            new Base(1, 0.20, 0.86, 'green', 25, 'city', 1),
-            new Base(2, 0.50, 0.90, 'green', 20, 'barracks', 1),
-            new Base(3, 0.80, 0.86, 'green', 25, 'city', 1),
+            // সারি ৫ (নিচে - সবুজ দলের ৪টি রাজ্য)
+            new Base(1,  0.00, 0.80, 0.25, 0.20, 'green', 25, 'city', 1),
+            new Base(2,  0.25, 0.80, 0.25, 0.20, 'green', 20, 'barracks', 1),
+            new Base(3,  0.50, 0.80, 0.25, 0.20, 'green', 20, 'barracks', 1),
+            new Base(4,  0.75, 0.80, 0.25, 0.20, 'green', 25, 'city', 1),
 
-            // ⚪ নিরপেক্ষ রাজ্য (নিচের ফ্ল্যাংক)
-            new Base(4, 0.18, 0.68, 'gray', 12, 'barracks', 1),
-            new Base(5, 0.82, 0.68, 'gray', 12, 'city', 1),
+            // সারি ৪ (নিরপেক্ষ নিচের জমি)
+            new Base(5,  0.00, 0.60, 0.25, 0.20, 'gray', 10, 'city', 1),
+            new Base(6,  0.25, 0.60, 0.25, 0.20, 'gray', 12, 'barracks', 1),
+            new Base(7,  0.50, 0.60, 0.25, 0.20, 'gray', 15, 'tower', 1),
+            new Base(8,  0.75, 0.60, 0.25, 0.20, 'gray', 10, 'city', 1),
 
-            // ⚪ নিরপেক্ষ রাজ্য (সেন্ট্রাল)
-            new Base(6, 0.50, 0.50, 'gray', 20, 'tower', 1),
-            new Base(7, 0.16, 0.50, 'gray', 10, 'city', 1),
-            new Base(8, 0.84, 0.50, 'gray', 10, 'barracks', 1),
+            // সারি ৩ (মাঝখানের মূল কেন্দ্র)
+            new Base(9,  0.00, 0.40, 0.25, 0.20, 'gray', 12, 'barracks', 1),
+            new Base(10, 0.25, 0.40, 0.25, 0.20, 'gray', 18, 'tower', 1),
+            new Base(11, 0.50, 0.40, 0.25, 0.20, 'gray', 18, 'tower', 1),
+            new Base(12, 0.75, 0.40, 0.25, 0.20, 'gray', 12, 'barracks', 1),
 
-            // ⚪ নিরপেক্ষ রাজ্য (উপরের ফ্ল্যাংক)
-            new Base(9, 0.18, 0.32, 'gray', 12, 'city', 1),
-            new Base(10, 0.82, 0.32, 'gray', 12, 'barracks', 1),
+            // সারি ২ (নিরপেক্ষ উপরের জমি)
+            new Base(13, 0.00, 0.20, 0.25, 0.20, 'gray', 10, 'city', 1),
+            new Base(14, 0.25, 0.20, 0.25, 0.20, 'gray', 15, 'tower', 1),
+            new Base(15, 0.50, 0.20, 0.25, 0.20, 'gray', 12, 'barracks', 1),
+            new Base(16, 0.75, 0.20, 0.25, 0.20, 'gray', 10, 'city', 1),
 
-            // 🔴 লাল দল (Guest)
-            new Base(11, 0.20, 0.14, 'red', 25, 'city', 1),
-            new Base(12, 0.50, 0.10, 'red', 20, 'barracks', 1),
-            new Base(13, 0.80, 0.14, 'red', 25, 'city', 1)
+            // সারি ১ (উপরে - লাল দলের ৪টি রাজ্য)
+            new Base(17, 0.00, 0.00, 0.25, 0.20, 'red', 25, 'city', 1),
+            new Base(18, 0.25, 0.00, 0.25, 0.20, 'red', 20, 'barracks', 1),
+            new Base(19, 0.50, 0.00, 0.25, 0.20, 'red', 20, 'barracks', 1),
+            new Base(20, 0.75, 0.00, 0.25, 0.20, 'red', 25, 'city', 1)
         ];
 
         troops = [];
@@ -555,16 +696,68 @@
         selectedBases.clear();
         gameOver = false;
         gameStarted = true;
+        cardTimer = cardCooldown;
         document.getElementById('modal').style.display = 'none';
 
-        // হোস্ট প্রতি ১ সেকেন্ড পর পর সব রাজ্যের আপডেট গেস্টকে পাঠাবে
         if (syncInterval) clearInterval(syncInterval);
         if (isMultiplayer && myTeam === 'green') {
             syncInterval = setInterval(broadcastStateSync, 1000);
         }
     }
 
-    // নির্দিষ্ট সংখ্যক সেনা পাঠানো (Synchronized)
+    function useInfiltrationCard() {
+        if (cardTimer > 0 || gameOver || !gameStarted) return;
+
+        applyInfiltrationLogic(myTeam);
+
+        if (isMultiplayer && roomRef) {
+            roomRef.child('actions').push({
+                type: 'CARD_INFILTRATE',
+                team: myTeam
+            });
+        }
+
+        cardTimer = cardCooldown;
+    }
+
+    function applyInfiltrationLogic(casterTeam) {
+        bases.forEach(b => {
+            if (b.owner !== 'gray' && b.owner !== casterTeam) {
+                if (b.units < 5) {
+                    b.owner = casterTeam;
+                    b.units = Math.max(1, 5 - b.units);
+                    spawnExplosion(b.x, b.y, COLORS[casterTeam].border, 20);
+                } else {
+                    b.units -= 5;
+                    spawnExplosion(b.x, b.y, '#f59e0b', 10);
+                }
+            }
+        });
+        AudioEngine.upgrade();
+    }
+
+    function updateCardUI(dt) {
+        if (!gameStarted || gameOver) return;
+
+        if (cardTimer > 0) {
+            cardTimer -= dt;
+            const cardEl = document.getElementById('skill-card');
+            const textEl = document.getElementById('card-timer-text');
+            if (cardTimer <= 0) {
+                cardTimer = 0;
+                cardEl.classList.remove('locked');
+                cardEl.classList.add('ready');
+                textEl.innerText = "READY";
+                textEl.style.color = "#facc15";
+            } else {
+                cardEl.classList.add('locked');
+                cardEl.classList.remove('ready');
+                textEl.innerText = Math.ceil(cardTimer) + "s";
+                textEl.style.color = "#38bdf8";
+            }
+        }
+    }
+
     function executeSendArmy(fromBase, toBase, exactCount = null) {
         if (!fromBase || !toBase || fromBase === toBase) return;
         
@@ -585,7 +778,7 @@
                 if (!gameOver && fromBase.owner) {
                     troops.push(new Troop(fromBase, toBase, fromBase.owner));
                 }
-            }, i * 60);
+            }, i * 50);
         }
     }
 
@@ -596,7 +789,7 @@
                 const t2 = troops[j];
 
                 if (t1.active && t2.active && t1.owner !== t2.owner) {
-                    if (Math.hypot(t1.x - t2.x, t1.y - t2.y) < 10) {
+                    if (Math.hypot(t1.x - t2.x, t1.y - t2.y) < 9) {
                         t1.active = false;
                         t2.active = false;
                         spawnExplosion((t1.x + t2.x) / 2, (t1.y + t2.y) / 2, '#fbbf24', 4);
@@ -607,32 +800,60 @@
         }
     }
 
+    // --- 🤖 বট এআই (স্লাইডার অনুযায়ী ডিফিকাল্টি অ্যাডজাস্টেড) ---
     let soloAiTimer = 0;
     function runSoloAI(dt) {
         if (!isSolo) return;
         soloAiTimer += dt;
-        if (soloAiTimer < 1.4) return;
+
+        // স্লাইডারের শতাংশ অনুযায়ী সিদ্ধান্ত গ্রহণের গতি নির্ধারণ (১% হলে ৩.৫ সেকেন্ড, ১০০% হলে ০.৮ সেকেন্ড)
+        const diffRatio = Math.max(0.01, botDifficulty / 100);
+        const decisionInterval = 3.5 - (diffRatio * 2.7);
+
+        if (soloAiTimer < decisionInterval) return;
         soloAiTimer = 0;
 
         const myBases = bases.filter(b => b.owner === 'red');
         if (myBases.length === 0) return;
 
+        // আপগ্রেড করার সিদ্ধান্ত (দক্ষতার ওপর নির্ভর করে)
         myBases.forEach(b => {
-            if (b.units > b.maxUnits * 0.8 && b.canUpgrade()) b.upgrade();
+            if (Math.random() < diffRatio && b.units > b.maxUnits * 0.75 && b.canUpgrade()) {
+                b.upgrade();
+            }
         });
 
-        const readyBases = myBases.filter(b => b.units > 12);
+        // কত সৈন্য জমলে আক্রমণ করবে
+        const minUnitsToAttack = Math.round(18 - (diffRatio * 10));
+        const readyBases = myBases.filter(b => b.units >= minUnitsToAttack);
+
         if (readyBases.length > 0) {
             const targets = bases.filter(b => b.owner !== 'red');
-            targets.sort((a, b) => a.units - b.units);
-            if (targets[0]) executeSendArmy(readyBases[0], targets[0]);
+            if (targets.length === 0) return;
+
+            // বট সঠিক চাল দেবে নাকি ভুল করবে (Diff ratio এর ওপর নির্ভর করে)
+            const isSmartMove = Math.random() < diffRatio;
+            let chosenTarget;
+            
+            if (isSmartMove) {
+                // স্মার্ট চাল: সবচেয়ে দুর্বল রাজ্যে অ্যাটাক
+                targets.sort((a, b) => a.units - b.units);
+                chosenTarget = targets[0];
+            } else {
+                // ভুল চাল: যেকোনো এলোমেলো রাজ্যে অ্যাটাক
+                chosenTarget = targets[Math.floor(Math.random() * targets.length)];
+            }
+
+            const chosenSource = readyBases[Math.floor(Math.random() * readyBases.length)];
+            if (chosenSource && chosenTarget) {
+                executeSendArmy(chosenSource, chosenTarget);
+            }
         }
     }
 
     function checkGameState() {
         if (!gameStarted || bases.length === 0 || gameOver) return;
 
-        // শুধু হোস্ট বা সোলো মোডে গেম ওভারের চূড়ান্ত সিদ্ধান্ত নেওয়া হয়
         if (isSolo || myTeam === 'green') {
             const greenBases = bases.filter(b => b.owner === 'green').length;
             const redBases = bases.filter(b => b.owner === 'red').length;
@@ -683,7 +904,7 @@
         document.getElementById('bar-gray').style.width = (total.gray / sum * 100) + '%';
     }
 
-    // --- 4. FIREBASE REAL-TIME SYNC ---
+    // --- 4. FIREBASE LOGIC ---
     function startHostGame() {
         AudioEngine.init();
         isMultiplayer = true;
@@ -745,7 +966,7 @@
         isSolo = true;
         myTeam = 'green';
         document.getElementById('lobby-screen').style.display = 'none';
-        document.getElementById('room-badge').innerHTML = 'মোড: একক (Solo) | <span style="color:#22c55e">আমার দল: সবুজ</span>';
+        document.getElementById('room-badge').innerHTML = `মোড: বটের সাথে (AI: ${botDifficulty}%) | <span style="color:#22c55e">আমার দল: সবুজ</span>`;
         initMap();
     }
 
@@ -765,7 +986,6 @@
         document.getElementById('lobby-screen').style.display = 'flex';
     }
 
-    // আক্রমণ পাঠানোর সময় সেনার সঠিক সংখ্যা ব্রডকাস্ট করা
     function broadcastAttack(attacksList, toBaseId) {
         if (isMultiplayer && roomRef) {
             roomRef.child('actions').push({
@@ -785,7 +1005,6 @@
         }
     }
 
-    // প্রতি ১ সেকেন্ডে হোস্ট থেকে রাজ্যের অবস্থা সিঙ্ক
     function broadcastStateSync() {
         if (!roomRef || gameOver || !gameStarted || myTeam !== 'green') return;
         const snapshot = bases.map(b => ({
@@ -798,7 +1017,6 @@
     }
 
     function listenToMultiplayerActions() {
-        // ১. অ্যাকশন লিসেনার
         roomRef.child('actions').on('child_added', snap => {
             const act = snap.val();
             if (!act) return;
@@ -814,12 +1032,13 @@
             } else if (act.type === 'UPGRADE') {
                 const base = bases.find(b => b.id === act.baseId);
                 if (base) base.upgrade(true);
+            } else if (act.type === 'CARD_INFILTRATE') {
+                applyInfiltrationLogic(act.team);
             } else if (act.type === 'GAME_OVER') {
                 showGameOverModal(act.winner);
             }
         });
 
-        // ২. গেস্টের জন্য হোস্টের ডাটা সিঙ্ক লিসেনার
         if (myTeam === 'red') {
             roomRef.child('syncState').on('value', snap => {
                 const state = snap.val();
@@ -830,7 +1049,6 @@
                     if (b) {
                         b.owner = s.owner;
                         b.level = s.level;
-                        // সেনার সংখ্যায় বেশি ফারাক হলে সরাসরি সিঙ্ক
                         if (Math.abs(b.units - s.units) > 2) {
                             b.units = s.units;
                         }
@@ -849,7 +1067,10 @@
     }
 
     function findBaseAt(pos) {
-        return bases.find(b => Math.hypot(b.x - pos.x, b.y - pos.y) <= b.radius + 15);
+        return bases.find(b => {
+            const r = b.rect;
+            return pos.x >= r.x && pos.x <= r.x + r.w && pos.y >= r.y && pos.y <= r.y + r.h;
+        });
     }
 
     function onPointerDown(e) {
@@ -882,7 +1103,6 @@
             const moveDist = Math.hypot(dragCurrentPos.x - pointerStartPos.x, dragCurrentPos.y - pointerStartPos.y);
             const targetBase = findBaseAt(dragCurrentPos);
 
-            // ট্যাপ আপগ্রেড
             if (duration < 250 && moveDist < 10) {
                 const clickedBase = [...selectedBases][0];
                 if (clickedBase && clickedBase.owner === myTeam) {
@@ -893,7 +1113,6 @@
                     }
                 }
             } 
-            // টেনে আক্রমণ করা
             else if (targetBase) {
                 const fromList = [...selectedBases].filter(b => b !== targetBase);
                 if (fromList.length > 0) {
@@ -933,6 +1152,7 @@
 
         if (gameStarted && !gameOver) {
             runSoloAI(dt);
+            updateCardUI(dt);
             bases.forEach(b => b.update(dt));
             troops.forEach(t => t.update(dt));
             checkMidAirCollisions();
@@ -941,15 +1161,16 @@
             updateTopBar();
         }
 
-        // আক্রমণ করার নির্দেশক রেখা
+        bases.forEach(b => b.draw());
+
         if (selectedBases.size > 0 && dragCurrentPos) {
             selectedBases.forEach(src => {
                 ctx.beginPath();
-                ctx.setLineDash([5, 5]);
+                ctx.setLineDash([6, 6]);
                 ctx.moveTo(src.x, src.y);
                 ctx.lineTo(dragCurrentPos.x, dragCurrentPos.y);
-                ctx.strokeStyle = COLORS[myTeam].main;
-                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = COLORS[myTeam].border;
+                ctx.lineWidth = 3;
                 ctx.stroke();
                 ctx.setLineDash([]);
             });
@@ -961,13 +1182,12 @@
             ctx.moveTo(shot.x1, shot.y1);
             ctx.lineTo(shot.x2, shot.y2);
             ctx.strokeStyle = '#facc15';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2.5;
             ctx.stroke();
             shot.life -= dt;
             if (shot.life <= 0) towerShots.splice(i, 1);
         }
 
-        bases.forEach(b => b.draw());
         troops.forEach(t => t.draw());
 
         for (let i = particles.length - 1; i >= 0; i--) {
