@@ -325,9 +325,10 @@
     // Multiplayer State
     let isMultiplayer = false;
     let isSolo = false;
-    let myTeam = 'green'; // 'green' (Host/Solo) or 'red' (Guest)
+    let myTeam = 'green'; 
     let currentRoomId = null;
     let roomRef = null;
+    let syncInterval = null;
 
     class Base {
         constructor(id, relX, relY, owner, units, type = 'city', level = 1) {
@@ -343,7 +344,6 @@
             this.towerTimer = 0;
         }
 
-        // 🔥 প্লেয়ারের দল অনুযায়ী স্বয়ংক্রিয় স্ক্রিন ফ্লিপ (Red প্লেয়ারের জন্য ম্যাপ উল্টে নিজেরটা নিচে আসবে)
         get x() { 
             const rx = (myTeam === 'red') ? (1 - this.relX) : this.relX;
             return rx * width; 
@@ -415,7 +415,7 @@
             ctx.fillStyle = theme.glow;
             ctx.fill();
 
-            // Multi-selection Ring
+            // Selection Ring
             if (selectedBases.has(this)) {
                 ctx.beginPath();
                 ctx.arc(x, y, this.radius + 6, 0, Math.PI * 2);
@@ -522,11 +522,10 @@
         }
     }
 
-    // ১৩টি রাজ্যের স্ট্র্যাটেজিক ম্যাপ
     function initMap() {
         resizeCanvas();
         bases = [
-            // 🟢 সবুজ দল (নিচে - ৩টি রাজ্য)
+            // 🟢 সবুজ দল (Host)
             new Base(1, 0.20, 0.86, 'green', 25, 'city', 1),
             new Base(2, 0.50, 0.90, 'green', 20, 'barracks', 1),
             new Base(3, 0.80, 0.86, 'green', 25, 'city', 1),
@@ -535,8 +534,8 @@
             new Base(4, 0.18, 0.68, 'gray', 12, 'barracks', 1),
             new Base(5, 0.82, 0.68, 'gray', 12, 'city', 1),
 
-            // ⚪ নিরপেক্ষ রাজ্য (মাঝখানের মূল কেন্দ্র ও ফ্ল্যাংক)
-            new Base(6, 0.50, 0.50, 'gray', 20, 'tower', 1),     // সেন্ট্রাল ডিফেন্স টাওয়ার
+            // ⚪ নিরপেক্ষ রাজ্য (সেন্ট্রাল)
+            new Base(6, 0.50, 0.50, 'gray', 20, 'tower', 1),
             new Base(7, 0.16, 0.50, 'gray', 10, 'city', 1),
             new Base(8, 0.84, 0.50, 'gray', 10, 'barracks', 1),
 
@@ -544,7 +543,7 @@
             new Base(9, 0.18, 0.32, 'gray', 12, 'city', 1),
             new Base(10, 0.82, 0.32, 'gray', 12, 'barracks', 1),
 
-            // 🔴 লাল দল (উপরে - ৩টি রাজ্য)
+            // 🔴 লাল দল (Guest)
             new Base(11, 0.20, 0.14, 'red', 25, 'city', 1),
             new Base(12, 0.50, 0.10, 'red', 20, 'barracks', 1),
             new Base(13, 0.80, 0.14, 'red', 25, 'city', 1)
@@ -557,15 +556,28 @@
         gameOver = false;
         gameStarted = true;
         document.getElementById('modal').style.display = 'none';
+
+        // হোস্ট প্রতি ১ সেকেন্ড পর পর সব রাজ্যের আপডেট গেস্টকে পাঠাবে
+        if (syncInterval) clearInterval(syncInterval);
+        if (isMultiplayer && myTeam === 'green') {
+            syncInterval = setInterval(broadcastStateSync, 1000);
+        }
     }
 
-    function executeSendArmy(fromBase, toBase) {
+    // নির্দিষ্ট সংখ্যক সেনা পাঠানো (Synchronized)
+    function executeSendArmy(fromBase, toBase, exactCount = null) {
         if (!fromBase || !toBase || fromBase === toBase) return;
-        const count = Math.floor(fromBase.units);
-        if (count <= 1) return;
+        
+        let sendCount = exactCount;
+        if (sendCount === null) {
+            const count = Math.floor(fromBase.units);
+            if (count <= 1) return;
+            sendCount = Math.floor(count * 0.70);
+            fromBase.units -= sendCount;
+        } else {
+            fromBase.units = Math.max(1, fromBase.units - sendCount);
+        }
 
-        const sendCount = Math.floor(count * 0.70);
-        fromBase.units -= sendCount;
         AudioEngine.launch();
 
         for (let i = 0; i < sendCount; i++) {
@@ -573,7 +585,7 @@
                 if (!gameOver && fromBase.owner) {
                     troops.push(new Troop(fromBase, toBase, fromBase.owner));
                 }
-            }, i * 65);
+            }, i * 60);
         }
     }
 
@@ -618,26 +630,45 @@
     }
 
     function checkGameState() {
-        if (!gameStarted || bases.length === 0) return;
+        if (!gameStarted || bases.length === 0 || gameOver) return;
 
-        const greenBases = bases.filter(b => b.owner === 'green').length;
-        const redBases = bases.filter(b => b.owner === 'red').length;
+        // শুধু হোস্ট বা সোলো মোডে গেম ওভারের চূড়ান্ত সিদ্ধান্ত নেওয়া হয়
+        if (isSolo || myTeam === 'green') {
+            const greenBases = bases.filter(b => b.owner === 'green').length;
+            const redBases = bases.filter(b => b.owner === 'red').length;
 
-        if (greenBases === bases.length && troops.every(t => t.owner === 'green')) {
-            showModal(myTeam === 'green' ? 'মহাকাব্যিক বিজয়! 🏆' : 'পরাজয়! ⚔️', 'সবুজ দল সমস্ত রাজ্য জয় করেছে!');
-            AudioEngine.win();
-            gameOver = true;
-        } else if (redBases === bases.length && troops.every(t => t.owner === 'red')) {
-            showModal(myTeam === 'red' ? 'মহাকাব্যিক বিজয়! 🏆' : 'পরাজয়! ⚔️', 'লাল দল সমস্ত রাজ্য জয় করেছে!');
-            AudioEngine.win();
-            gameOver = true;
+            if (greenBases === bases.length && troops.every(t => t.owner === 'green')) {
+                handleGameOver('green');
+            } else if (redBases === bases.length && troops.every(t => t.owner === 'red')) {
+                handleGameOver('red');
+            }
         }
     }
 
-    function showModal(title, desc) {
+    function handleGameOver(winnerTeam) {
+        if (gameOver) return;
+        gameOver = true;
+
+        if (isMultiplayer && roomRef) {
+            roomRef.child('actions').push({
+                type: 'GAME_OVER',
+                winner: winnerTeam
+            });
+        }
+        showGameOverModal(winnerTeam);
+    }
+
+    function showGameOverModal(winnerTeam) {
+        const isWin = (myTeam === winnerTeam);
+        const title = isWin ? 'মহাকাব্যিক বিজয়! 🏆' : 'পরাজয়! ⚔️';
+        const desc = (winnerTeam === 'green') ? 'সবুজ দল সমস্ত রাজ্য জয় করেছে!' : 'লাল দল সমস্ত রাজ্য জয় করেছে!';
+        
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-desc').innerText = desc;
         document.getElementById('modal').style.display = 'flex';
+        
+        if (isWin) AudioEngine.win();
+        gameOver = true;
     }
 
     function updateTopBar() {
@@ -652,7 +683,7 @@
         document.getElementById('bar-gray').style.width = (total.gray / sum * 100) + '%';
     }
 
-    // --- 4. FIREBASE MULTIPLAYER LOGIC ---
+    // --- 4. FIREBASE REAL-TIME SYNC ---
     function startHostGame() {
         AudioEngine.init();
         isMultiplayer = true;
@@ -719,11 +750,13 @@
     }
 
     function cancelRoom() {
+        if (syncInterval) clearInterval(syncInterval);
         if (roomRef) roomRef.remove();
         returnToLobby();
     }
 
     function returnToLobby() {
+        if (syncInterval) clearInterval(syncInterval);
         if (roomRef) roomRef.off();
         gameStarted = false;
         gameOver = true;
@@ -732,11 +765,12 @@
         document.getElementById('lobby-screen').style.display = 'flex';
     }
 
-    function broadcastAttack(fromBaseIds, toBaseId) {
+    // আক্রমণ পাঠানোর সময় সেনার সঠিক সংখ্যা ব্রডকাস্ট করা
+    function broadcastAttack(attacksList, toBaseId) {
         if (isMultiplayer && roomRef) {
             roomRef.child('actions').push({
                 type: 'ATTACK',
-                from: fromBaseIds,
+                attacks: attacksList,
                 to: toBaseId
             });
         }
@@ -751,21 +785,59 @@
         }
     }
 
+    // প্রতি ১ সেকেন্ডে হোস্ট থেকে রাজ্যের অবস্থা সিঙ্ক
+    function broadcastStateSync() {
+        if (!roomRef || gameOver || !gameStarted || myTeam !== 'green') return;
+        const snapshot = bases.map(b => ({
+            id: b.id,
+            owner: b.owner,
+            units: Math.floor(b.units),
+            level: b.level
+        }));
+        roomRef.child('syncState').set(snapshot);
+    }
+
     function listenToMultiplayerActions() {
+        // ১. অ্যাকশন লিসেনার
         roomRef.child('actions').on('child_added', snap => {
             const act = snap.val();
             if (!act) return;
+
             if (act.type === 'ATTACK') {
-                act.from.forEach(srcId => {
-                    const src = bases.find(b => b.id === srcId);
-                    const target = bases.find(b => b.id === act.to);
-                    executeSendArmy(src, target);
+                const target = bases.find(b => b.id === act.to);
+                act.attacks.forEach(att => {
+                    const src = bases.find(b => b.id === att.id);
+                    if (src && target) {
+                        executeSendArmy(src, target, att.count);
+                    }
                 });
             } else if (act.type === 'UPGRADE') {
                 const base = bases.find(b => b.id === act.baseId);
                 if (base) base.upgrade(true);
+            } else if (act.type === 'GAME_OVER') {
+                showGameOverModal(act.winner);
             }
         });
+
+        // ২. গেস্টের জন্য হোস্টের ডাটা সিঙ্ক লিসেনার
+        if (myTeam === 'red') {
+            roomRef.child('syncState').on('value', snap => {
+                const state = snap.val();
+                if (!state || !Array.isArray(state)) return;
+                
+                state.forEach(s => {
+                    const b = bases.find(base => base.id === s.id);
+                    if (b) {
+                        b.owner = s.owner;
+                        b.level = s.level;
+                        // সেনার সংখ্যায় বেশি ফারাক হলে সরাসরি সিঙ্ক
+                        if (Math.abs(b.units - s.units) > 2) {
+                            b.units = s.units;
+                        }
+                    }
+                });
+            });
+        }
     }
 
     // --- 5. TOUCH & POINTER CONTROLS ---
@@ -810,6 +882,7 @@
             const moveDist = Math.hypot(dragCurrentPos.x - pointerStartPos.x, dragCurrentPos.y - pointerStartPos.y);
             const targetBase = findBaseAt(dragCurrentPos);
 
+            // ট্যাপ আপগ্রেড
             if (duration < 250 && moveDist < 10) {
                 const clickedBase = [...selectedBases][0];
                 if (clickedBase && clickedBase.owner === myTeam) {
@@ -819,11 +892,20 @@
                         clickedBase.upgrade();
                     }
                 }
-            } else if (targetBase) {
+            } 
+            // টেনে আক্রমণ করা
+            else if (targetBase) {
                 const fromList = [...selectedBases].filter(b => b !== targetBase);
                 if (fromList.length > 0) {
                     if (isMultiplayer) {
-                        broadcastAttack(fromList.map(b => b.id), targetBase.id);
+                        const attacksList = fromList.map(b => ({
+                            id: b.id,
+                            count: Math.floor(Math.floor(b.units) * 0.70)
+                        })).filter(a => a.count > 0);
+
+                        if (attacksList.length > 0) {
+                            broadcastAttack(attacksList, targetBase.id);
+                        }
                     } else {
                         fromList.forEach(src => executeSendArmy(src, targetBase));
                     }
@@ -859,6 +941,7 @@
             updateTopBar();
         }
 
+        // আক্রমণ করার নির্দেশক রেখা
         if (selectedBases.size > 0 && dragCurrentPos) {
             selectedBases.forEach(src => {
                 ctx.beginPath();
